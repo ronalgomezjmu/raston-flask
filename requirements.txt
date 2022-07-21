@@ -31,6 +31,7 @@ executing==0.8.3
 fastapi==0.78.0
 fastjsonschema==2.15.3
 filelock==3.7.1
+flask==2.1.3
 fonttools==4.33.3
 frozendict==2.3.2
 fsspec==2022.5.0
