@@ -1,0 +1,15 @@
+curl -X POST localhost:5000/post_json \
+    -H "Content-type: application/json" \
+    -d "{ \
+        \"min_wave\" : 1900, \
+        \"max_wave\" : 2300, \
+        \"molecule\" : \"CO\", \
+        \"pressure\" : 1, \
+        \"resolution\" : 1, \
+        \"num_scan\" : 1, \
+        \"zero_fill\" : 0, \
+        \"source\" : \"tungsten\", \
+        \"beamsplitter\" : \"AR_CaF2\", \
+        \"cell_window\" : \"ZnSe\", \
+        \"detector\" : \"InSb\" \
+    }"

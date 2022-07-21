@@ -1,0 +1,3 @@
+#!/home/vanfossen/flask_radis/.venv/bin/python3
+from numba.pycc import main
+main()
