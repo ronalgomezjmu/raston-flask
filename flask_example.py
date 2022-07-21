@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 from decimal import Decimal
 from radis import calc_spectrum
 
@@ -10,12 +11,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 app = Flask(__name__)
+CORS(app) # pip install flask-cors
 
 
 @app.route('/post_json', methods=['POST'])
 def process_json():
     # put incoming JSON into a dictionary
     data = json.loads(request.data)
+
+    print(data)
 
     # verify the information in the dictionary
     __param_check(data)
@@ -38,6 +42,7 @@ def process_json():
 
     # convert dictionary values to strings and return as JSON
     return json.dumps(str(result))
+
 
 # --------------------------------------
 # ---- spectra calculation functons ----
@@ -196,8 +201,8 @@ def __loadData(s):
 
 
 def __param_check(data):
-    print("----- list all keys -----")
-    print("  %s" % (data.keys()))
+    # print("----- list all keys -----")
+    # print("  %s" % (data.keys()))
 
     print("----- check if params are correct -----")
     valid_params = ["min_wave",
