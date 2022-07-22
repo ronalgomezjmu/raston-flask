@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 app = Flask(__name__)
-CORS(app) # pip install flask-cors
+CORS(app)  # pip install flask-cors
 
 
 @app.route('/post_json', methods=['POST'])
@@ -23,10 +23,6 @@ def process_json():
 
     # verify the information in the dictionary
     __param_check(data)
-
-    # convert wavenumber (cm^-1) to wavelenth (nm)
-    data["min_wave"], data["max_wave"] = __convert_wavenum_wavelen(
-        data["min_wave"], data["max_wave"])
 
     print("----- output verified params to console as self-check -----")
     for key, value in data.items():
@@ -44,8 +40,7 @@ def process_json():
     return {
         "data": {
             "x": list(result.keys()),
-            "y": list(result.values()),
-            "units": "",
+            "y": [str(flt) for flt in result.values()],
         }
     }
 
@@ -336,10 +331,10 @@ def __param_check(data):
                 (data["zero_fill"]))
 
     print("----- check if source is correct -----")
-    if data["source"] == "globar":
+    if data["source"] == "Globar":
         data["source"] = 1700
         print("  good!")
-    elif data["source"] == "tungsten":
+    elif data["source"] == "Tungsten":
         data["source"] = 3100
         print("  good!")
     else:
@@ -368,33 +363,11 @@ def __param_check(data):
                 (data["detector"]))
 
 
-def __convert_wavenum_wavelen(min, max):
-    min_wave = math.floor(10000000 / max)
-    max_wave = math.ceil(10000000 / min)
-
-    # check if wavelengths are correct
-    if 25000 < min_wave < 800:
-        __error(
-            "  wavelength is out of range (800 - 25000). provided min: %s. provided max: %s" % (min_wave, max_wave))
-    elif min_wave > max_wave:
-        __error("  min wavelength is greater than max wavelength. provided min: %s  provided max: %s" % (
-            min_wave, max_wave))
-    elif max_wave < min_wave:
-        __error("  max wavelength is less than min wavelength. provided min: %s  provided max: %s" % (
-            min_wave, max_wave))
-    elif min_wave == max_wave:
-        __error("  min wavelength is equivalent to max wavelength. provided min: %s  provided max: %s" % (
-            min_wave, max_wave))
-    else:
-        return min_wave, max_wave
-
-
 def __generate_spectra(data):
     # ----- a.) transmission spectrum of gas sample -----
     # https://radis.readthedocs.io/en/latest/source/radis.lbl.calc.html#radis.lbl.calc.calc_spectrum
     s = calc_spectrum(data["min_wave"],
                       data["max_wave"],
-                      wunit='nm',
                       molecule=data["molecule"],
                       isotope='1,2,3',
                       pressure=data["pressure"],
@@ -406,9 +379,10 @@ def __generate_spectra(data):
                       warnings={'AccuracyError': 'ignore'},
                       )
 
+    spectrum = __loadData(s.get("transmittance_noslit",
+                          wunit="nm", Iunit="default"))
+
     # ----- b.) blackbody spectrum of source -----
-    spectrum = __loadData(
-        s.get('radiance_noslit', wunit='nm', Iunit='W/cm2/sr/nm'))
 
     spectrum = __sPlanck(spectrum, data["source"])
 
