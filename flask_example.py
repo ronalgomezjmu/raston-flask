@@ -41,7 +41,13 @@ def process_json():
     print("----- end __generate_spectra() -----")
 
     # convert dictionary values to strings and return as JSON
-    return json.dumps(str(result))
+    return {
+        "data": {
+            "x": list(result.keys()),
+            "y": list(result.values()),
+            "units": "",
+        }
+    }
 
 
 # --------------------------------------
